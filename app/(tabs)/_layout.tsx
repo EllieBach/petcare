@@ -2,6 +2,7 @@ import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
+import Fontisto from '@expo/vector-icons/Fontisto';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -9,10 +10,10 @@ import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof Fontisto>['name'];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <Fontisto name="paw" size={24} color="black" />;
 }
 
 export default function TabLayout() {
@@ -26,10 +27,11 @@ export default function TabLayout() {
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
       }}>
+      
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
+          title: 'Your Pets',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
@@ -48,9 +50,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+      name="home"
+      options={{
+        title: 'Home',
+        tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+      }}
+      />
+      <Tabs.Screen
         name="two"
         options={{
-          title: 'Tab Two',
+          title: 'To Do',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
