@@ -19,7 +19,8 @@ export default function AddPetModal({
   const [petName, setPetName] = useState("");
   const [selectedGender, setSelectedGender] = useState("select a gender");
   const [isDropdownVisible, setDropdownVisible] = useState(false);
-  const [selectType, setSelectedType] = useState ('select type')
+  const [selectType, setSelectedType] = useState ('select typeg');
+  const [age, setAge] = useState("");
 
   const gendersOptions = ["female", "male"];
   const animalType = ["dog", "cat", "hamster", "guinea pig", "bird", "reptile", "lizard"];
