@@ -19,8 +19,10 @@ export default function AddPetModal({
   const [petName, setPetName] = useState("");
   const [selectedGender, setSelectedGender] = useState("select a gender");
   const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [selectType, setSelectedType] = useState ('select type')
 
   const gendersOptions = ["female", "male"];
+  const animalType = ["dog", "cat", "hamster", "guinea pig", "bird", "reptile", "lizard"];
 
   const toggleDropdown = () => setDropdownVisible(!isDropdownVisible);
 
@@ -28,6 +30,11 @@ export default function AddPetModal({
     setSelectedGender(gender);
     setDropdownVisible(false);
   };
+
+  const selectAnimal = (animal) => {
+    setSelectedType(animal);
+    setDropdownVisible(false);
+  }
 
   const handleAddPet = () => {
     if (petName && selectedGender !== "select a gender") {
@@ -37,6 +44,7 @@ export default function AddPetModal({
       ]);
       setPetName("");
       setSelectedGender("select a gender");
+      setSelectedType('select type')
       setModalVisible(false); // Close the modal
     } else {
       alert("Please enter a pet name and select a gender!");
@@ -84,7 +92,11 @@ export default function AddPetModal({
               />
             </View>
           )}
+<View>
+  <FlatList>
 
+  </FlatList>
+</View>
           <View style={styles.buttonContainer}>
             <Button title="Save" onPress={handleAddPet} />
             <Button title="Cancel" onPress={() => setModalVisible(false)} />
