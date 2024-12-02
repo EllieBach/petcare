@@ -4,10 +4,12 @@ import {
   Modal,
   FlatList,
   Pressable,
-  Button,
+  TouchableOpacity,
+  Image,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
 import AddPetModal from "@/components/AddPetModal";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function TabOneScreen() {
   const [selectedPet, setSelectedPet] = useState(null);
@@ -22,21 +24,47 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
-    
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <View
+        style={styles.separator}
+        lightColor="#eee"
+        darkColor="rgba(255,255,255,0.1)"
+      />
       <FlatList
         data={pets}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Pressable style={styles.petItem} onPress={() => openDetailsModal(item)}>
-            <Text style={styles.petText}>{item.name} ({item.gender})</Text>
+          <Pressable
+            style={styles.petItem}
+            onPress={() => openDetailsModal(item)}
+          >
+           
+            {item.image && (
+              <Image source={{ uri: item.image }} style={styles.petImage} />
+            )}
+            <Text style={styles.petText}>
+              {item.name} </Text>
+             
           </Pressable>
         )}
-        ListEmptyComponent={<Text style={styles.noPetsText}>No pets added yet.</Text>}
+        ListEmptyComponent={
+          <Text style={styles.noPetsText}>No pets added yet.</Text>
+        }
       />
-      <Button title="Add" onPress={() => setModalVisible(true)} />
-      <AddPetModal modalVisible={modalVisible} setModalVisible={setModalVisible} setPets={setPets} pets={pets} />
-      
+   
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <AntDesign name="pluscircleo" size={24} color="white" />
+      </TouchableOpacity>
+    
+      <AddPetModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        setPets={setPets}
+        pets={pets}
+      />
+
       {selectedPet && (
         <Modal
           animationType="slide"
@@ -47,9 +75,27 @@ export default function TabOneScreen() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Pet Details</Text>
-              <Text style={styles.petDetailsText}>Name: {selectedPet.name}</Text>
-              <Text style={styles.petDetailsText}>Gender: {selectedPet.gender}</Text>
-              <Button title="Close" onPress={() => setDetailsModalVisible(false)} />
+              {selectedPet.image && (
+                <Image
+                  source={{ uri: selectedPet.image }}
+                  style={styles.detailImage}
+                />
+              )}
+              <Text style={styles.petDetailsText}>
+                Name: {selectedPet.name}
+              </Text>
+              <Text style={styles.petDetailsText}>
+                Gender: {selectedPet.gender}
+              </Text>
+              <Text style={styles.petDetailsText}>
+                Type: {selectedPet.type}
+              </Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setDetailsModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -63,10 +109,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
@@ -90,6 +132,21 @@ const styles = StyleSheet.create({
     color: "#888",
     marginVertical: 10,
   },
+  petImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginBottom: 5,
+  },
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+    borderRadius: 30
+  },
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
@@ -112,5 +169,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     marginBottom: 10,
+  },
+  detailImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  closeButton: {
+    marginTop: 10,
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "white",
+    fontSize: 16,
   },
 });

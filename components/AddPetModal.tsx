@@ -8,7 +8,11 @@ import {
   Button,
   Text,
   View,
+  Image
+
 } from "react-native";
+import { launchImageLibrary } from "react-native-image-picker";
+
 
 export default function AddPetModal({
   modalVisible,
@@ -17,39 +21,67 @@ export default function AddPetModal({
   pets,
 }) {
   const [petName, setPetName] = useState("");
-  const [selectedGender, setSelectedGender] = useState("select a gender");
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
-  const [selectType, setSelectedType] = useState ('select typeg');
-  const [age, setAge] = useState("");
+  const [selectedGender, setSelectedGender] = useState("Select a gender");
+  const [isGenderDropdownVisible, setGenderDropdownVisible] = useState(false);
+  const [selectedType, setSelectedType] = useState("Select a type");
+  const [isTypeDropdownVisible, setTypeDropdownVisible] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+ 
 
   const gendersOptions = ["female", "male"];
-  const animalType = ["dog", "cat", "hamster", "guinea pig", "bird", "reptile", "lizard"];
+  const animalType = [
+    "dog",
+    "cat",
+    "hamster",
+    "guinea pig",
+    "bird",
+    "reptile",
+    "lizard",
+  ];
 
-  const toggleDropdown = () => setDropdownVisible(!isDropdownVisible);
+  const toggleGenderDropdown = () => setGenderDropdownVisible(!isGenderDropdownVisible);
+
+  const toggleTypeDropdown = () => setTypeDropdownVisible(!isTypeDropdownVisible);
 
   const selectGender = (gender) => {
     setSelectedGender(gender);
-    setDropdownVisible(false);
+    setGenderDropdownVisible(false);
   };
 
   const selectAnimal = (animal) => {
     setSelectedType(animal);
-    setDropdownVisible(false);
-  }
+    setTypeDropdownVisible(false);
+  
+  };
 
   const handleAddPet = () => {
-    if (petName && selectedGender !== "select a gender") {
+    if (petName && selectedGender !== "Select a gender" && selectedType !== "Select a type") {
       setPets([
         ...pets,
-        { id: Date.now().toString(), name: petName, gender: selectedGender },
+        {
+          id: Date.now().toString(),
+          name: petName,
+          gender: selectedGender,
+          type: selectedType,
+          image: imageUri,
+        },
       ]);
       setPetName("");
-      setSelectedGender("select a gender");
-      setSelectedType('select type')
+      setSelectedGender("Select a gender");
+      setSelectedType("Select a type");
+      setImageUri(null);
       setModalVisible(false); // Close the modal
     } else {
-      alert("Please enter a pet name and select a gender!");
+      alert("Please fill in all fields!");
     }
+  };
+
+  const pickImage = () => {
+    launchImageLibrary({ mediaType: "photo" }, (response) => {
+      if (response.assets && response.assets.length > 0) {
+        setImageUri(response.assets[0].uri);
+      }
+    });
   };
 
   return (
@@ -62,6 +94,7 @@ export default function AddPetModal({
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Add a Pet</Text>
+
           <Text style={styles.smallTitle}>Pet name</Text>
           <TextInput
             style={styles.input}
@@ -69,35 +102,74 @@ export default function AddPetModal({
             value={petName}
             onChangeText={setPetName}
           />
-          <Text style={styles.smallTitle}>Pet gender</Text>
+
+          <Text style={styles.smallTitle}>Pet type</Text>
           <TouchableOpacity
             style={styles.dropdownHeader}
-            onPress={toggleDropdown}
+            onPress={toggleTypeDropdown}
           >
-            <Text style={styles.dropdownText}>{selectedGender}</Text>
+            <Text style={styles.dropdownText}>{selectedType}</Text>
           </TouchableOpacity>
-
-          {isDropdownVisible && (
+          {isTypeDropdownVisible && (
             <View style={styles.dropdownList}>
               <FlatList
-                data={gendersOptions}
+                data={animalType}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.dropdownItem}
-                    onPress={() => selectGender(item)}
+                    onPress={() => selectAnimal(item)}
                   >
                     <Text style={styles.dropdownItemText}>{item}</Text>
                   </TouchableOpacity>
                 )}
+             
               />
             </View>
           )}
-<View>
-  <FlatList>
 
-  </FlatList>
-</View>
+          {selectedType !== "Select a type" && (
+            <>
+              <Text style={styles.smallTitle}>Pet gender</Text>
+              <TouchableOpacity
+                style={styles.dropdownHeader}
+                onPress={toggleGenderDropdown}
+              >
+                <Text style={styles.dropdownText}>{selectedGender}</Text>
+              </TouchableOpacity>
+              {isGenderDropdownVisible && (
+                <View style={styles.dropdownList}>
+               
+                  <FlatList
+                    data={gendersOptions}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={styles.dropdownItem}
+                        onPress={() => selectGender(item)}
+                      >
+                        <Text style={styles.dropdownItemText}>{item}</Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                 
+                </View>
+              )}
+            </>
+          )}
+
+          <Text style={styles.smallTitle}>Pet image</Text>
+          <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+            <Text style={styles.imagePickerText}>Pick an Image</Text>
+          </TouchableOpacity>
+          {imageUri && (
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.previewImage}
+            />
+          )}
+
+    
           <View style={styles.buttonContainer}>
             <Button title="Save" onPress={handleAddPet} />
             <Button title="Cancel" onPress={() => setModalVisible(false)} />
@@ -146,6 +218,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ddd",
     borderRadius: 5,
     alignItems: "center",
+    marginBottom: 10,
   },
   dropdownText: {
     fontSize: 16,
@@ -158,6 +231,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     marginTop: 5,
+    maxHeight: 150, // Adjust based on item height (e.g., 50px/item * 3 items)
   },
   dropdownItem: {
     padding: 15,
@@ -167,6 +241,22 @@ const styles = StyleSheet.create({
   dropdownItemText: {
     fontSize: 16,
     color: "#333",
+  },
+  imagePicker: {
+    backgroundColor: "#ddd",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  imagePickerText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  previewImage: {
+    width: 100,
+    height: 100,
+    marginVertical: 10,
   },
   buttonContainer: {
     flexDirection: "row",
